@@ -43,4 +43,4 @@ bin/
 
 ### Minecraft ###
 run/
-plugins/
+plugins//libs/

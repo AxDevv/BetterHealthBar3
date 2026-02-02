@@ -67,6 +67,7 @@ class BetterHealthBarImpl : BetterHealthBar() {
         PlaceholderManagerImpl,
         ImageManagerImpl,
         TextManagerImpl,
+        ItemManagerImpl,
         LayoutManagerImpl,
         HealthBarManagerImpl,
         MobManagerImpl,
@@ -256,6 +257,7 @@ class BetterHealthBarImpl : BetterHealthBar() {
     override fun textManager(): TextManager = TextManagerImpl
     override fun placeholderManager(): PlaceholderManager = PlaceholderManagerImpl
     override fun mobManager(): MobManager = MobManagerImpl
+    override fun itemManager(): ItemManager = ItemManagerImpl
     override fun audiences(): BukkitAudiences = audiences
     override fun hookOtherShaders(): Boolean = CompatibilityManager.hookOtherShaders
 

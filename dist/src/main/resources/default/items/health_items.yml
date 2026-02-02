@@ -1,0 +1,162 @@
+# 20 items pour les barres de vie basés sur le pourcentage
+# Chaque item correspond à une tranche de 5% de vie
+
+# 0-5% (critique)
+item_1:
+  item:
+    material: RED_WOOL
+    name: ""
+  min-percentage: 0.0
+  max-percentage: 0.05
+
+# 5-10%
+item_2:
+  item:
+    material: RED_WOOL
+    name: ""
+  min-percentage: 0.05
+  max-percentage: 0.10
+
+# 10-15%
+item_3:
+  item:
+    material: ORANGE_WOOL
+    name: ""
+  min-percentage: 0.10
+  max-percentage: 0.15
+
+# 15-20%
+item_4:
+  item:
+    material: ORANGE_WOOL
+    name: ""
+  min-percentage: 0.15
+  max-percentage: 0.20
+
+# 20-25%
+item_5:
+  item:
+    material: YELLOW_WOOL
+    name: ""
+  min-percentage: 0.20
+  max-percentage: 0.25
+
+# 25-30%
+item_6:
+  item:
+    material: YELLOW_WOOL
+    name: ""
+  min-percentage: 0.25
+  max-percentage: 0.30
+
+# 30-35%
+item_7:
+  item:
+    material: LIME_WOOL
+    name: ""
+  min-percentage: 0.30
+  max-percentage: 0.35
+
+# 35-40%
+item_8:
+  item:
+    material: LIME_WOOL
+    name: ""
+  min-percentage: 0.35
+  max-percentage: 0.40
+
+# 40-45%
+item_9:
+  item:
+    material: GREEN_WOOL
+    name: ""
+  min-percentage: 0.40
+  max-percentage: 0.45
+
+# 45-50%
+item_10:
+  item:
+    material: GREEN_WOOL
+    name: ""
+  min-percentage: 0.45
+  max-percentage: 0.50
+
+# 50-55%
+item_11:
+  item:
+    material: EMERALD_BLOCK
+    name: ""
+  min-percentage: 0.50
+  max-percentage: 0.55
+
+# 55-60%
+item_12:
+  item:
+    material: EMERALD_BLOCK
+    name: ""
+  min-percentage: 0.55
+  max-percentage: 0.60
+
+# 60-65%
+item_13:
+  item:
+    material: GREEN_TERRACOTTA
+    name: ""
+  min-percentage: 0.60
+  max-percentage: 0.65
+
+# 65-70%
+item_14:
+  item:
+    material: GREEN_TERRACOTTA
+    name: ""
+  min-percentage: 0.65
+  max-percentage: 0.70
+
+# 70-75%
+item_15:
+  item:
+    material: LIME_CARPET
+    name: ""
+  min-percentage: 0.70
+  max-percentage: 0.75
+
+# 75-80%
+item_16:
+  item:
+    material: LIME_CARPET
+    name: ""
+  min-percentage: 0.75
+  max-percentage: 0.80
+
+# 80-85%
+item_17:
+  item:
+    material: GREEN_CARPET
+    name: ""
+  min-percentage: 0.80
+  max-percentage: 0.85
+
+# 85-90%
+item_18:
+  item:
+    material: GREEN_CARPET
+    name: ""
+  min-percentage: 0.85
+  max-percentage: 0.90
+
+# 90-95%
+item_19:
+  item:
+    material: LIME_BANNER
+    name: ""
+  min-percentage: 0.90
+  max-percentage: 0.95
+
+# 95-100% (pleine vie)
+item_20:
+  item:
+    material: GOLDEN_APPLE
+    name: ""
+  min-percentage: 0.95
+  max-percentage: 1.0

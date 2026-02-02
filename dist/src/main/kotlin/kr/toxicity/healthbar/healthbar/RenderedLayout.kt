@@ -5,10 +5,13 @@ import kr.toxicity.healthbar.api.event.HealthBarCreateEvent
 import kr.toxicity.healthbar.api.layout.LayoutGroup
 import kr.toxicity.healthbar.api.nms.PacketBundler
 import kr.toxicity.healthbar.api.nms.VirtualTextDisplay
+import kr.toxicity.healthbar.api.nms.VirtualItemDisplay
 import kr.toxicity.healthbar.api.renderer.ImageRenderer
+import kr.toxicity.healthbar.api.renderer.ItemRenderer
 import kr.toxicity.healthbar.api.renderer.PixelRenderer
 import kr.toxicity.healthbar.util.*
 import org.bukkit.Location
+import org.bukkit.util.Vector
 
 class RenderedLayout(group: LayoutGroup, pair: HealthBarCreateEvent) {
     val group = group.group()
@@ -17,6 +20,9 @@ class RenderedLayout(group: LayoutGroup, pair: HealthBarCreateEvent) {
     }.toMutableList()
     val texts = group.texts().map {
         it.createRenderer(pair)
+    }.toMutableList()
+    val items = group.items().map {
+        it.createItemRenderer(pair)
     }.toMutableList()
 
     fun createPool(data: HealthBarCreateEvent, indexes: Map<String, GroupIndex>) = RenderedEntityPool(data, indexes)
@@ -30,6 +36,9 @@ class RenderedLayout(group: LayoutGroup, pair: HealthBarCreateEvent) {
         } + texts.map {
             RenderedEntity(it)
         }).toMutableList()
+        private val itemEntities = items.map {
+            RenderedItem(it)
+        }.toMutableList()
 
         fun displays() = entities.mapNotNull {
             it.entity
@@ -41,16 +50,25 @@ class RenderedLayout(group: LayoutGroup, pair: HealthBarCreateEvent) {
             entities.removeIf {
                 !it.hasNext()
             }
+            itemEntities.removeIf {
+                !it.hasNext()
+            }
             val imageMap = entities.filter {
                 it.canBeRendered(bundler)
             }
-            if (imageMap.isEmpty()) return false
+            val itemMap = itemEntities.filter {
+                it.canBeRendered(bundler)
+            }
+            if (imageMap.isEmpty() && itemMap.isEmpty()) return false
             val count = group?.let { s ->
                 indexes[s]
             }?.next() ?: 0
             max = 0
             imageMap.forEach {
                 it.update(count)
+            }
+            itemMap.forEach {
+                it.update()
             }
             return true
         }
@@ -59,13 +77,22 @@ class RenderedLayout(group: LayoutGroup, pair: HealthBarCreateEvent) {
             val imageMap = entities.filter {
                 it.canBeRendered(bundler)
             }
+            val itemMap = itemEntities.filter {
+                it.canBeRendered(bundler)
+            }
             imageMap.forEach {
                 it.create(max, loc, bundler)
+            }
+            itemMap.forEach {
+                it.create(loc, bundler)
             }
         }
 
         fun remove(bundler: PacketBundler) {
             entities.forEach {
+                it.remove(bundler)
+            }
+            itemEntities.forEach {
                 it.remove(bundler)
             }
         }
@@ -107,6 +134,44 @@ class RenderedLayout(group: LayoutGroup, pair: HealthBarCreateEvent) {
                 comp = renderer.render(count)
                 val length = comp.pixel + comp.component.width
                 if (renderer is ImageRenderer && renderer.isBackground && max < length) max = length
+            }
+        }
+
+        private inner class RenderedItem(
+            private val renderer: ItemRenderer
+        ) {
+            var entity: VirtualItemDisplay? = null
+
+            fun remove(bundler: PacketBundler) {
+                entity?.remove(bundler)
+            }
+
+            fun canBeRendered(bundler: PacketBundler): Boolean {
+                val result = renderer.canRender()
+                if (!result) {
+                    remove(bundler)
+                    entity = null
+                }
+                return result
+            }
+
+            fun hasNext() = renderer.hasNext()
+
+            fun create(loc: Location, bundler: PacketBundler) {
+                val item = renderer.getItem()
+                val existingEntity = entity
+                entity = existingEntity?.apply {
+                    teleport(loc)
+                    item(item)
+                    update(bundler)
+                } ?: PLUGIN.nms().createItemDisplay(loc, item).apply {
+                    transformation(Vector(0, 0, 0), Vector(renderer.scaleX(), renderer.scaleY(), renderer.scaleZ()).multiply(data.healthBar.scale()), 0f, 0f)
+                    spawn(bundler)
+                }
+            }
+
+            fun update() {
+                entity?.item(renderer.getItem())
             }
         }
     }

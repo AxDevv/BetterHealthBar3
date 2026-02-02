@@ -3,6 +3,7 @@ package kr.toxicity.healthbar.layout
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import kr.toxicity.healthbar.api.layout.ImageLayout
+import kr.toxicity.healthbar.api.layout.ItemLayout
 import kr.toxicity.healthbar.api.layout.LayoutGroup
 import kr.toxicity.healthbar.api.layout.TextLayout
 import kr.toxicity.healthbar.manager.EncodeManager
@@ -48,6 +49,18 @@ class LayoutGroupImpl(
             )
         }
     }
+    private val items = ArrayList<ItemLayoutImpl>().apply {
+        section.getConfigurationSection("items")?.forEachSubConfiguration { s, configurationSection ->
+            add(
+                ItemLayoutImpl(
+                    this@LayoutGroupImpl,
+                    s,
+                    ++i,
+                    configurationSection
+                )
+            )
+        }
+    }
 
     fun build(resource: PackResource, count: Int) {
         val json = JsonArray()
@@ -67,6 +80,7 @@ class LayoutGroupImpl(
     override fun images(): List<ImageLayout> = images
     override fun imageKey(): Key = imageKey
     override fun texts(): List<TextLayout> = texts
+    override fun items(): List<ItemLayout> = items
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

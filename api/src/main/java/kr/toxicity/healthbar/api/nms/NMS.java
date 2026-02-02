@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public interface NMS {
@@ -14,6 +15,7 @@ public interface NMS {
     LivingEntity foliaAdapt(@NotNull LivingEntity entity);
 
     @NotNull VirtualTextDisplay createTextDisplay(@NotNull Location location, @NotNull Component component);
+    @NotNull VirtualItemDisplay createItemDisplay(@NotNull Location location, @NotNull ItemStack itemStack);
     @NotNull PacketBundler createBundler();
 
     void inject(@NotNull HealthBarPlayer player);

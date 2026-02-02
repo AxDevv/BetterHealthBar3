@@ -1,0 +1,9 @@
+item_healthbar:
+  groups:
+    - item_healthbar
+  triggers:
+    - look
+    - damage
+  duration: 60
+  default: true
+  applicable-types: []

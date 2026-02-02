@@ -17,6 +17,10 @@ public interface LayoutGroup extends HealthBarConfiguration {
     @Unmodifiable
     List<TextLayout> texts();
 
+    @NotNull
+    @Unmodifiable
+    List<ItemLayout> items();
+
     @Nullable
     String group();
 

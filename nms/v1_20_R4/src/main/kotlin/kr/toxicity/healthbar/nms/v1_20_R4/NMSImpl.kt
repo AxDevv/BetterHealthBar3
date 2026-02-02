@@ -11,6 +11,7 @@ import kr.toxicity.healthbar.api.BetterHealthBar
 import kr.toxicity.healthbar.api.nms.NMS
 import kr.toxicity.healthbar.api.nms.PacketBundler
 import kr.toxicity.healthbar.api.nms.VirtualTextDisplay
+import kr.toxicity.healthbar.api.nms.VirtualItemDisplay
 import kr.toxicity.healthbar.api.player.HealthBarPlayer
 import kr.toxicity.healthbar.api.trigger.HealthBarTriggerType
 import kr.toxicity.healthbar.api.trigger.PacketTrigger
@@ -26,6 +27,7 @@ import net.minecraft.server.network.ServerCommonPacketListenerImpl
 import net.minecraft.util.Brightness
 import net.minecraft.world.entity.Display
 import net.minecraft.world.entity.Display.TextDisplay
+import net.minecraft.world.entity.Display.ItemDisplay
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.level.entity.LevelEntityGetter
@@ -46,6 +48,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.inventory.EntityEquipment
 import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
 import org.bukkit.permissions.Permission
 import org.bukkit.util.Vector
@@ -304,6 +307,73 @@ class NMSImpl : NMS {
                 display.setTransformation(Transformation(location.toVanilla(), null, scale.toVanilla(), null))
             }
 
+            override fun remove(bundler: PacketBundler) {
+                bundler += ClientboundRemoveEntitiesPacket(display.id)
+            }
+        }
+    }
+
+    private val ITEM_DATA_ACCESSOR = net.minecraft.network.syncher.EntityDataAccessor(23, net.minecraft.network.syncher.EntityDataSerializers.ITEM_STACK)
+
+    override fun createItemDisplay(location: Location, itemStack: ItemStack): VirtualItemDisplay {
+        val display = ItemDisplay(EntityType.ITEM_DISPLAY, (location.world as CraftWorld).handle).apply {
+            billboardConstraints = Display.BillboardConstraints.CENTER
+            entityData.run {
+                set(ITEM_DATA_ACCESSOR, org.bukkit.craftbukkit.inventory.CraftItemStack.asNMSCopy(itemStack))
+            }
+            brightnessOverride = Brightness(15, 15)
+            viewRange = 10F
+            moveTo(
+                location.x,
+                location.y,
+                location.z,
+                location.yaw,
+                location.pitch
+            )
+        }
+        return object : VirtualItemDisplay {
+            override fun spawn(bundler: PacketBundler) {
+                display.run {
+                    bundler += ClientboundAddEntityPacket(
+                        id,
+                        uuid,
+                        x,
+                        y,
+                        z,
+                        xRot,
+                        yRot,
+                        type,
+                        0,
+                        deltaMovement,
+                        yHeadRot.toDouble()
+                    )
+                    bundler += ClientboundSetEntityDataPacket(id, entityData.nonDefaultValues!!)
+                }
+            }
+            override fun update(bundler: PacketBundler) {
+                bundler += ClientboundTeleportEntityPacket(display)
+                display.entityData.packDirty()?.let {
+                    bundler += ClientboundSetEntityDataPacket(display.id, it)
+                }
+            }
+            override fun teleport(location: Location) {
+                display.moveTo(
+                    location.x,
+                    location.y,
+                    location.z,
+                    location.yaw,
+                    location.pitch
+                )
+            }
+            override fun item(itemStack: ItemStack) {
+                display.entityData.set(ITEM_DATA_ACCESSOR, org.bukkit.craftbukkit.inventory.CraftItemStack.asNMSCopy(itemStack))
+            }
+            override fun transformation(location: Vector, scale: Vector, leftRotation: Float, rightRotation: Float) {
+                fun Vector.toVanilla() = Vector3f(x.toFloat(), y.toFloat(), z.toFloat())
+                val leftRot = org.joml.Quaternionf().rotationY(leftRotation)
+                val rightRot = org.joml.Quaternionf().rotationY(rightRotation)
+                display.setTransformation(Transformation(location.toVanilla(), leftRot, scale.toVanilla(), rightRot))
+            }
             override fun remove(bundler: PacketBundler) {
                 bundler += ClientboundRemoveEntitiesPacket(display.id)
             }

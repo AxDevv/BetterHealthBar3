@@ -19,17 +19,17 @@ allprojects {
     group = "kr.toxicity.healthbar"
     version = "3.11.0"
     repositories {
+        flatDir { dirs("../libs") }
         mavenCentral()
+        maven("https://jitpack.io/")
         maven("https://repo.papermc.io/repository/maven-public/")
         maven("https://repo.opencollab.dev/main/")
-        maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
         maven("https://repo.skriptlang.org/releases")
         maven("https://repo.alessiodp.com/releases/")
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
         maven("https://maven.citizensnpcs.co/repo/")
-        maven("https://repo.alessiodp.com/releases/")
-        maven("https://jitpack.io/")
         maven("https://mvn.lumine.io/repository/maven-public/")
+        maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     }
     dependencies {
         implementation("org.bstats:bstats-bukkit:3.1.0")
@@ -127,7 +127,7 @@ dependencies {
     implementation(getProject("bedrock:geyser").spigot().dependency("org.geysermc.geyser:api:2.9.2-SNAPSHOT"))
     implementation(getProject("bedrock:floodgate").spigot().dependency("org.geysermc.floodgate:api:2.2.5-SNAPSHOT"))
     implementation(getProject("modelengine:legacy").spigot().dependency("com.ticxo.modelengine:api:R3.2.0"))
-    implementation(getProject("modelengine:current").spigot().dependency("com.ticxo.modelengine:ModelEngine:R4.0.9"))
+    implementation(getProject("modelengine:current").spigot())
     nmsVersions.forEach {
         implementation(project(":nms:${it.name}", configuration = "reobf"))
     }
