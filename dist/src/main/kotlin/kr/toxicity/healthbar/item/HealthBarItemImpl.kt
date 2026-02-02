@@ -1,6 +1,7 @@
 package kr.toxicity.healthbar.item
 
 import kr.toxicity.healthbar.api.item.HealthBarItem
+import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.inventory.ItemStack
 
@@ -9,13 +10,15 @@ class HealthBarItemImpl(
     private val path: String,
     section: ConfigurationSection
 ): HealthBarItem {
-    private val item = section.getItemStack("item").let { stack ->
-        stack?.clone()?.apply {
+    private val item = section.getString("item")?.let { materialName ->
+        val material = Material.getMaterial(materialName)
+            ?: throw RuntimeException("Unknown material: $materialName in $path")
+        ItemStack(material).apply {
             val meta = itemMeta
             meta?.setDisplayName("")
             itemMeta = meta
-        } ?: throw RuntimeException("Item not found in $path")
-    }
+        }
+    } ?: throw RuntimeException("Item not found in $path")
     private val percentage = section.getDouble("percentage", -1.0)
     private val minPercentage = section.getDouble("min-percentage", percentage)
     private val maxPercentage = section.getDouble("max-percentage", if (percentage < 0) 1.0 else percentage + (1.0 / 20.0))
